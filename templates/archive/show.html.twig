@@ -1,0 +1,42 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Archive{% endblock %}
+
+{% block body %}
+    <h1>Archive</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ archive.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ archive.nom }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ archive.description }}</td>
+            </tr>
+            <tr>
+                <th>FileName</th>
+                <td>{{ archive.fileName }}</td>
+            </tr>
+            <tr>
+                <th>FilePath</th>
+                <td>{{ archive.filePath }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ archive.updatedAt ? archive.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_archive_index') }}">back to list</a>
+
+    <a href="{{ path('app_archive_edit', {'id': archive.id}) }}">edit</a>
+
+    {{ include('archive/_delete_form.html.twig') }}
+{% endblock %}

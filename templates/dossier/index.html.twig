@@ -1,0 +1,117 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Dossier index{% endblock %}
+
+{% block body %}
+    <h1>Dossier index</h1>
+
+    <!-- Formulaire de recherche -->
+    <div class="search-bar d-flex justify-content-center mb-4">
+        <form class="search-form d-flex align-items-center">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher..." />
+        </form>
+    </div>
+
+    <table class="table" id="dossierTable">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Url</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for dossier in pagination %}
+            <tr>
+                <td>{{ dossier.id }}</td>
+                <td>{{ dossier.nom }}</td>
+                <td>{{ dossier.filePath }}</td>
+                <td>
+                    <a href="{{ path('app_dossier_show', {'id': dossier.id}) }}">show</a>
+                    <a href="{{ path('app_dossier_edit', {'id': dossier.id}) }}">edit</a>
+                    <a href="{{ path('app_dossier_archiver', {id: dossier.id}) }}">archiver</a>
+
+                    {#  <form action="{{ path('app_dossier_send_email', { id: dossier.id }) }}" method="post" style="display:inline;">
+                        <button id="sendEmailButton{{ dossier.id }}" onclick="sendEmail({{ dossier.id }})">Répondre</button>
+                    </form>#}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Affichage de la pagination -->
+    <div class="pagination justify-content-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    {#  <div class="text-end">
+        <form action="{{ path('app_dossier_send_email_all') }}" method="post">
+            <button type="submit" class="btn btn-primary">Répondre à tous</button>
+        </form>
+    </div> #}
+
+    <a href="{{ path('app_dossier_new') }}">Create new</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const table = document.getElementById('dossierTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            searchInput.addEventListener('keyup', function() {
+                const query = searchInput.value.toLowerCase();
+
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(query)) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    rows[i].style.display = found ? '' : 'none';
+                }
+            });
+        });
+
+        function sendEmail(dossierId) {
+            const button = document.getElementById('sendEmailButton' + dossierId);
+            button.disabled = true; // Désactive le bouton
+
+            // Envoi de la requête pour le serveur (si nécessaire)
+            fetch(`/dossier/${dossierId}/send-email`, { // Remplacez avec l'URL correcte
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    // Corps de la requête si nécessaire
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Traitement si la requête réussit
+                        alert('Dossier envoyé et déplacé avec succès!');
+                    } else {
+                        // Réactivation du bouton en cas d'erreur
+                        button.disabled = false;
+                        alert('Erreur lors de l\'envoi du dossier.');
+                    }
+                })
+                .catch(error => {
+                    // Réactivation du bouton en cas d'erreur réseau
+                    button.disabled = false;
+                    alert('Erreur réseau.');
+                });
+        }
+    </script>
+{% endblock %}

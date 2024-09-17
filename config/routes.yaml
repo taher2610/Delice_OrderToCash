@@ -1,0 +1,9 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+
+dossier_send_email:
+  path: /dossier/{id}/send-email
+  controller: App\Controller\DossierController::sendEmail
+  methods: POST

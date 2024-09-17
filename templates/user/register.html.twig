@@ -1,0 +1,85 @@
+{% block stylesheets %}
+    <style>
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f7f7f7;
+        }
+        .register-form {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .register-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .register-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .register-form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .register-form button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .register-form button:hover {
+            background-color: #0056b3;
+        }
+        .register-form .error {
+            color: #ff0000;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="register-container">
+        <div class="register-form">
+            <h2>Register</h2>
+
+            {% if errors %}
+                <div class="error">
+                    {% for error in errors %}
+                        {{ error.message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {{ form_start(registrationForm) }}
+            {{ form_widget(registrationForm) }}
+            {{ form_end(registrationForm) }}
+
+            <!-- Move the login link outside of the form -->
+            <a href="{{ path('app_login') }}" class="login-link">Already have an account? Login here</a>
+        </div>
+    </div>
+{% endblock %}

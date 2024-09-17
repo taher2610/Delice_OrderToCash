@@ -1,0 +1,111 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}User {% endblock %}
+
+{% block body %}
+    <h1>User index</h1>
+
+    <!-- Barre de recherche centrée -->
+    <div class="search-bar d-flex justify-content-center mb-4">
+        <form class="search-form d-flex align-items-center">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher par email..." />
+        </form>
+    </div>
+
+    <!-- Menu déroulant pour le tri par état -->
+    <div class="d-flex justify-content-center mb-4">
+        <select id="filterState" class="form-control w-auto">
+            <option value="all">Tous les états</option>
+            <option value="blocked">Bloqué</option>
+            <option value="unblocked">Débloqué</option>
+        </select>
+    </div>
+
+    <table class="table" id="userTable">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Password</th>
+            <th>Etat</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.isBlocked ? 'Bloqué' : 'Débloqué' }}</td>
+                <td>
+                    <a href="{{ path('user_toggle_block', { id: user.id }) }}">
+                        {{ user.isBlocked ? 'Débloquer' : 'Bloquer' }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    {#  <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>#}
+                </td>
+                <td>
+                    {# Affiche le lien Promouvoir si l'utilisateur n'est pas admin #}
+                    {% if 'ROLE_ADMIN' not in user.roles %}
+                        <a href="{{ path('user_promote', {'id': user.id}) }}">Promouvoir</a>
+                    {% endif %}
+
+                    {# Affiche le lien Rétrograder si l'utilisateur est admin #}
+                    {% if 'ROLE_ADMIN' in user.roles %}
+                        <a href="{{ path('user_demote', {'id': user.id}) }}">Rétrograder</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center">
+        {{ knp_pagination_render(users) }}
+    </div>
+
+    {# <a href="{{ path('app_user_new') }}">Create new</a> #}
+
+    <!-- Script pour recherche et tri -->
+    <script>
+        // Filtrer les résultats par recherche d'email
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const input = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#userTable tbody tr');
+            rows.forEach(row => {
+                const email = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                if (email.includes(input)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Filtrer les résultats par état (bloqué ou débloqué)
+        document.getElementById('filterState').addEventListener('change', function() {
+            const filter = this.value;
+            const rows = document.querySelectorAll('#userTable tbody tr');
+            rows.forEach(row => {
+                const state = row.querySelector('td:nth-child(5)').textContent.trim();
+                if (filter === 'all' ||
+                    (filter === 'blocked' && state === 'Bloqué') ||
+                    (filter === 'unblocked' && state === 'Débloqué')) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+{% endblock %}

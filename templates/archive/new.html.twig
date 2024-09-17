@@ -1,0 +1,11 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}New Archive{% endblock %}
+
+{% block body %}
+    <h1>Create new Archive</h1>
+
+    {{ include('archive/_form.html.twig') }}
+
+    <a href="{{ path('app_archive_index') }}">back to list</a>
+{% endblock %}

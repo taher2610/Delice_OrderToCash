@@ -1,0 +1,95 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Parametrage{% endblock %}
+
+{% block body %}
+    <h1>Dossier index</h1>
+
+    <!-- Barre de recherche -->
+    <div class="search-bar d-flex justify-content-center mb-4">
+        <form class="search-form d-flex align-items-center">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher..." />
+        </form>
+    </div>
+
+    <!-- Table de dossiers avec pagination -->
+    <table class="table" id="dossierTable">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Url</th>
+            <th>Sujet</th>
+            <th>Texte</th>
+            <th>Dest. Principal</th>
+            <th>Dest. Copie</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for dossier in pagination %}
+            <tr>
+                <td>{{ dossier.id }}</td>
+                <td>{{ dossier.nom }}</td>
+                <td>{{ dossier.filePath }}</td>
+
+                <!-- Début du formulaire -->
+                <td>
+                    {{ form_start(forms[dossier.id]) }}
+                    {{ form_row(forms[dossier.id].object) }}
+                </td>
+                <td>
+                    {{ form_row(forms[dossier.id].text) }}
+                </td>
+                <td>
+                    {{ form_row(forms[dossier.id].dest_principal) }}
+                </td>
+                <td>
+                    {{ form_row(forms[dossier.id].dest_copie) }}
+                </td>
+                <td>
+                    {{ form_widget(forms[dossier.id].submit, {'label': 'Envoyer', 'attr': {'class': 'btn btn-primary'}}) }}
+                    {{ form_end(forms[dossier.id]) }}
+                </td>
+                <!-- Fin du formulaire -->
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">Aucun dossier trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Liens de pagination -->
+    <div class="pagination">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <!-- Script de recherche -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const table = document.getElementById('dossierTable');
+            const tbody = table.querySelector('tbody');
+
+            searchInput.addEventListener('keyup', function () {
+                const query = this.value.toLowerCase();
+                const rows = tbody.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let isVisible = false;
+
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(query)) {
+                            isVisible = true;
+                        }
+                    });
+
+                    row.style.display = isVisible ? '' : 'none';
+                });
+            });
+        });
+    </script>
+{% endblock %}

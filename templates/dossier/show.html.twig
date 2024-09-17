@@ -1,0 +1,42 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Dossier{% endblock %}
+
+{% block body %}
+    <h1>Dossier</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ dossier.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ dossier.nom }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ dossier.description }}</td>
+            </tr>
+            <tr>
+                <th>Url</th>
+                {% if dossier.fileName %}
+                    <td>
+                        <a href="{{ asset('uploads/dossiers/' ~ dossier.fileName) }}" target="_blank">
+                            Voir le Dossier
+                        </a>
+                    </td>
+                {% else %}
+                    <p>Aucun fichier uploadé.</p>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_dossier_index') }}">back to list</a>
+
+    <a href="{{ path('app_dossier_edit', {'id': dossier.id}) }}">edit</a>
+
+    {{ include('dossier/_delete_form.html.twig') }}
+{% endblock %}

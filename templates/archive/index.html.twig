@@ -1,0 +1,80 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Archive {% endblock %}
+
+{% block body %}
+    <h1>Archive index</h1>
+
+    <!-- Formulaire de recherche -->
+    <div class="search-bar d-flex justify-content-center mb-4">
+        <form class="search-form d-flex align-items-center">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher..." />
+        </form>
+    </div>
+
+    <table class="table" id="archiveTable">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>FileName</th>
+            <th>FilePath</th>
+            <th>UpdatedAt</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for archive in pagination %}
+            <tr>
+                <td>{{ archive.id }}</td>
+                <td>{{ archive.nom }}</td>
+                <td>{{ archive.fileName }}</td>
+                <td>{{ archive.filePath }}</td>
+                <td>{{ archive.updatedAt ? archive.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_archive_show', {'id': archive.id}) }}">show</a>
+                    <a href="{{ path('app_archive_edit', {'id': archive.id}) }}">edit</a>
+                    <a href="{{ path('app_archive_rendre', {'id': archive.id}) }}">Rendre</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">Aucun enregistrement trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Affichage de la pagination -->
+    <div class="pagination justify-content-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    {# <a href="{{ path('app_archive_new') }}">Créer un nouveau</a> #}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const table = document.getElementById('archiveTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            searchInput.addEventListener('keyup', function() {
+                const query = searchInput.value.toLowerCase();
+
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(query)) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    rows[i].style.display = found ? '' : 'none';
+                }
+            });
+        });
+    </script>
+{% endblock %}

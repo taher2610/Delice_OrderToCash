@@ -1,0 +1,5 @@
+framework:
+    mailer:
+        dsn: 'smtp://taher.benismail@gmail.com:klzltarcxmlzfxss@smtp.gmail.com:587?encryption=tls'
+
+

@@ -1,0 +1,73 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+    <h1>Répartition des Dossiers et Archives</h1>
+    <div style="max-width: 300px; margin: auto;"> <!-- Limite la taille maximale de la courbe -->
+        <canvas id="dossierArchiveChart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('dossierArchiveChart').getContext('2d');
+
+        // Fonction pour calculer les pourcentages
+        function calculatePercentages(data) {
+            const total = data.reduce((a, b) => a + b, 0);
+            return data.map(value => ((value / total) * 100).toFixed(2));
+        }
+
+        const dataValues = [{{ dossierCount }}, {{ archiveCount }}];
+        const percentageValues = calculatePercentages(dataValues);
+
+        const dossierArchiveChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Dossiers', 'Archives'],
+                datasets: [{
+                    label: 'Répartition',
+                    data: dataValues,
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const dataIndex = tooltipItem.dataIndex;
+                                const value = tooltipItem.raw;
+                                const percentage = percentageValues[dataIndex];
+                                return ` ${tooltipItem.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                return data.labels.map((label, index) => {
+                                    const value = data.datasets[0].data[index];
+                                    const percentage = percentageValues[index];
+                                    return {
+                                        text: `${label}: ${value} (${percentage}%)`,
+                                        fillStyle: data.datasets[0].backgroundColor[index],
+                                        strokeStyle: data.datasets[0].borderColor[index]
+                                    };
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

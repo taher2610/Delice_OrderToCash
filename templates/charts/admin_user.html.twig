@@ -1,0 +1,79 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+    <h1>Répartition des Utilisateurs (Admin vs User)</h1>
+    <div style="max-width: 600px; margin: auto;"> <!-- Taille maximale doublée -->
+        <canvas id="userRolesChart" height="400"></canvas> <!-- Hauteur doublée -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const ctx = document.getElementById('userRolesChart').getContext('2d');
+
+        // Fonction pour calculer les pourcentages
+        function calculatePercentages(data) {
+            const total = data.reduce((a, b) => a + b, 0);
+            return data.map(value => ((value / total) * 100).toFixed(2));
+        }
+
+        const dataValues = [{{ adminCount }}, {{ userCount }}];
+        const percentageValues = calculatePercentages(dataValues);
+
+        const userRolesChart = new Chart(ctx, {
+            type: 'bar',  // Utiliser un Bar Chart pour les utilisateurs
+            data: {
+                labels: ['Admin', 'User'],  // Labels pour Admin et User
+                datasets: [{
+                    label: 'Utilisateurs',
+                    data: dataValues,  // Valeurs des utilisateurs
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)', // Couleur pour Admin
+                        'rgba(54, 162, 235, 0.2)'  // Couleur pour User
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)', // Bordure pour Admin
+                        'rgba(54, 162, 235, 1)'  // Bordure pour User
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Pour rendre le chart flexible
+                scales: {
+                    y: {
+                        beginAtZero: true // Commence à zéro pour l'axe Y
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const dataIndex = tooltipItem.dataIndex;
+                                const value = tooltipItem.raw;
+                                const percentage = percentageValues[dataIndex];
+                                return `${tooltipItem.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                return data.labels.map((label, index) => {
+                                    const value = data.datasets[0].data[index];
+                                    const percentage = percentageValues[index];
+                                    return {
+                                        text: `${label}: ${value} (${percentage}%)`,
+                                        fillStyle: data.datasets[0].backgroundColor[index],
+                                        strokeStyle: data.datasets[0].borderColor[index]
+                                    };
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
